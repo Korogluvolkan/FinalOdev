@@ -86,22 +86,10 @@
     <Compile Include="Form4.Designer.cs">
       <DependentUpon>Form4.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202006120949233_InitialCreate.cs" />
-    <Compile Include="Migrations\202006120949233_InitialCreate.designer.cs">
-      <DependentUpon>202006120949233_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202006121352166_CreateNotesColumnInRezervasyonsTable.cs" />
-    <Compile Include="Migrations\202006121352166_CreateNotesColumnInRezervasyonsTable.designer.cs">
-      <DependentUpon>202006121352166_CreateNotesColumnInRezervasyonsTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202006121507181_CreatePayCheckColumnInRezervasyonsTable.cs" />
-    <Compile Include="Migrations\202006121507181_CreatePayCheckColumnInRezervasyonsTable.designer.cs">
-      <DependentUpon>202006121507181_CreatePayCheckColumnInRezervasyonsTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlCon.cs" />
+    <Compile Include="Utils.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -113,15 +101,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form4.resx">
       <DependentUpon>Form4.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202006120949233_InitialCreate.resx">
-      <DependentUpon>202006120949233_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202006121352166_CreateNotesColumnInRezervasyonsTable.resx">
-      <DependentUpon>202006121352166_CreateNotesColumnInRezervasyonsTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202006121507181_CreatePayCheckColumnInRezervasyonsTable.resx">
-      <DependentUpon>202006121507181_CreatePayCheckColumnInRezervasyonsTable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -152,6 +131,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\cash.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

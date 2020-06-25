@@ -5,123 +5,125 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data;
+using System.Data.Common;
+using System.Data.Entity;
+using haliSahaRezervasyon.Entity;
 
 namespace haliSahaRezervasyon
 {
     public class SqlCon
     {
-        SqlConnection con = new SqlConnection();
-        SqlDataAdapter da = new SqlDataAdapter();
-        SqlCommand com = new SqlCommand();
-        DataSet ds = new DataSet();
-        /*public void gridoldur()
+       
+        Context dbcontext = new Context();
+
+        public void SahaEkle(string SahaIsim,string Adres,int Fiyat,int SahaKisi,bool SahaDurum)
         {
-            DataTable dt = new DataTable();
-            con = new SqlConnection("Data Source=DESKTOP-R60O1VQ\\SQLEXPRESS03;Initial Catalog=ProjeHaliSaha;Integrated Security=True");
-            da = new SqlDataAdapter("Select * from Sahalars", con);
-            ds = new DataSet();
-            con.Open();
-            da.Fill(ds, "Sahalars");
-            dt = ds.Tables["Sahalars"];
-            dataGridView1.DataSource = ds.Tables["Sahalars"];
-            con.Close();
-        }*/
-       public void SahaDurumGuncelle(int SahaId,bool SahaDurum)
+            Sahalar saha = new Sahalar();
+            saha.SahaIsim = SahaIsim;
+            saha.Adres = Adres;
+            saha.Fiyat = Fiyat;
+            saha.SahaKisi = SahaKisi;
+            saha.SahaDurum = true;
+            dbcontext.Sahalars.Add(saha);
+            dbcontext.SaveChanges();
+
+
+        }
+        public void SahaDurumGuncelle(int SahaId,bool SahaDurum)
         {
-            con = new SqlConnection("Data Source=DESKTOP-R60O1VQ\\SQLEXPRESS03;Initial Catalog=ProjeHaliSaha;Integrated Security=True");
-            string sql = "UPDATE Sahalars SET SahaDurum=@SahaDurum WHERE SahaId=@SahaId";
-            com = new SqlCommand(sql, con);
-            com.Parameters.AddWithValue("@SahaDurum", SahaDurum);
-            com.Parameters.AddWithValue("@SahaId", SahaId);
-            con.Open();
-            com.ExecuteNonQuery();
-            con.Close();
+            Sahalar saha = dbcontext.Sahalars.First(o => o.SahaId == SahaId);
+            saha.SahaDurum = SahaDurum;
+            dbcontext.SaveChanges();
         }
         
         public DataTable RezervasyonFiyatGetir()
         {
-            con = new SqlConnection("Data Source=DESKTOP-R60O1VQ\\SQLEXPRESS03;Initial Catalog=ProjeHaliSaha;Integrated Security=True");
-            con.Open();
-            SqlDataAdapter adap = new SqlDataAdapter("Select Fiyat from Sahalars", con);
-            DataTable tbl = new DataTable();
-            adap.Fill(tbl);
-            con.Close();
-            return tbl;
+            string query = dbcontext.Sahalars.Select(o => new { o.Fiyat }).ToString();
+            DataTable dataTable = this.DataTable(dbcontext, query);
+            return dataTable;
         }
-        public DataTable TabloyuGetir(bool SahaDurum)
-        {
-            con = new SqlConnection("Data Source=DESKTOP-R60O1VQ\\SQLEXPRESS03;Initial Catalog=ProjeHaliSaha;Integrated Security=True");
-            con.Open();
-            SqlDataAdapter adap = new SqlDataAdapter("Select * from Sahalars where SahaDurum='"+SahaDurum+"'", con);
-            DataTable tbl = new DataTable();
-            adap.Fill(tbl);
-            con.Close();
-            return tbl;
-        }
+       
         public DataTable RezervasyonTablo()
         {
-            con = new SqlConnection("Data Source=DESKTOP-R60O1VQ\\SQLEXPRESS03;Initial Catalog=ProjeHaliSaha;Integrated Security=True");
-            con.Open();
-            SqlDataAdapter adap = new SqlDataAdapter("Select Sahalars.SahaId,Sahalars.SahaIsim,Rezervasyons.Tarih,Rezervasyons.RezervasyonSaat,Sahalars.SahaKisi,Sahalars.Fiyat,Sahalars.Adres,Rezervasyons.PayCheck AS FiyatDurumu from Rezervasyons inner join Sahalars ON Rezervasyons.SahaId=Sahalars.SahaId", con);
-            DataTable tbl = new DataTable();
-            adap.Fill(tbl);
-            con.Close();
-            return tbl;
+            string query = (
+                from Rezervasyons in dbcontext.Rezervasyons
+                join Sahalars in dbcontext.Sahalars on Rezervasyons.SahaId equals Sahalars.SahaId
+                select new
+                {
+                    Sahalars.SahaIsim,
+                    Rezervasyons.Tarih,
+                    Rezervasyons.RezervasyonSaat,
+                    Sahalars.SahaKisi,
+                    Sahalars.Fiyat,
+                    Sahalars.Adres,
+                    FiyatDurumu = Rezervasyons.PayCheck
+                }
+                ).ToString();
+
+            DataTable dataTable = this.DataTable(dbcontext, query);
+            return dataTable;
         }
-        public DataTable TabloyuGetir1()
+        public DataTable TabloyuGetir1(Boolean? SahaDurum)
         {
-            con = new SqlConnection("Data Source=DESKTOP-R60O1VQ\\SQLEXPRESS03;Initial Catalog=ProjeHaliSaha;Integrated Security=True");
-            con.Open();
-            SqlDataAdapter adap = new SqlDataAdapter("Select * from Sahalars", con);
-            DataTable tbl = new DataTable();
-            adap.Fill(tbl);
-            con.Close();
-            return tbl;
+            string query = "";
+            if (SahaDurum != null)
+            {
+                if (SahaDurum == true)
+                {
+                    query = dbcontext.Sahalars.Where(o => o.SahaDurum == true).ToString();
+                }
+                else
+                {
+                    query = dbcontext.Sahalars.Where(o => o.SahaDurum == false).ToString();
+                }
+            }
+            else
+            {
+                query = dbcontext.Sahalars.ToString();
+            }
+
+            DataTable dataTable = this.DataTable(dbcontext, query);
+            return dataTable;
         }
         public Boolean SaatTarihKontrol(int SahaId,string Tarih,string saat)
         {
+            DateTime dateTime = Convert.ToDateTime(Tarih);
+            Rezervasyon rezervasyon = dbcontext.Rezervasyons.Where(o => o.RezervasyonSaat == saat && o.Tarih == dateTime && o.SahaId == SahaId).FirstOrDefault();
 
-          
-
-            Boolean success = false;
-            con = new SqlConnection("Data Source=DESKTOP-R60O1VQ\\SQLEXPRESS03;Initial Catalog=ProjeHaliSaha;Integrated Security=True");
-            con.Open();
-            com = new SqlCommand("Select * from Rezervasyons where RezervasyonSaat=@saat and Tarih=@Tarih and SahaId=@SahaId", con);
-            com.Parameters.AddWithValue("@saat", saat);
-            com.Parameters.AddWithValue("@SahaId", SahaId);
-            com.Parameters.AddWithValue("@Tarih", Convert.ToDateTime(Tarih));
-            using (SqlDataReader reader = com.ExecuteReader())
-            {
-                if(reader.Read())
-                {
-                    success = true;
-                }
-            }
-                con.Close();
-
-            return success;
-
+            return (rezervasyon != null) ? true : false;
         }
         public Boolean PayCheckUpdate(string Tarih, string saat, int RSahaId, bool PayCheck)
         {
-            Boolean success = false;
-            con = new SqlConnection("Data Source=DESKTOP-R60O1VQ\\SQLEXPRESS03;Initial Catalog=ProjeHaliSaha;Integrated Security=True");
-            string sql = "UPDATE Rezervasyons SET PayCheck=@PayCheck WHERE RezervasyonSaat=@saat and Tarih=@Tarih and SahaId=@RSahaId";
-            com = new SqlCommand(sql, con);
-            com.Parameters.AddWithValue("@PayCheck", PayCheck);
-            com.Parameters.AddWithValue("@RSahaId", RSahaId);
-            com.Parameters.AddWithValue("@saat", saat);
-            com.Parameters.AddWithValue("@Tarih", Convert.ToDateTime(Tarih));
-            con.Open();
-            using (SqlDataReader reader = com.ExecuteReader())
+            DateTime tarih_date = Convert.ToDateTime(Tarih);
+            Rezervasyon rezervasyons = dbcontext.Rezervasyons.First(o => o.SahaId == RSahaId && o.Tarih == tarih_date && o.RezervasyonSaat == saat);
+            rezervasyons.PayCheck = PayCheck;
+            dbcontext.SaveChanges();
+            
+            return true;
+        }
+
+
+        //LINQ SQL -> Datatable verisi alındığı yer
+        public DataTable DataTable(DbContext context, string sqlQuery)
+        {
+            DbProviderFactory dbFactory = DbProviderFactories.GetFactory(context.Database.Connection);
+
+            using (var cmd = dbFactory.CreateCommand())
             {
-                if (reader.Read())
+                cmd.Connection = context.Database.Connection;
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = sqlQuery;
+                using (DbDataAdapter adapter = dbFactory.CreateDataAdapter())
                 {
-                    success = true;
+                    adapter.SelectCommand = cmd;
+
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    return dt;
                 }
             }
-            return success;
-            con.Close();
         }
     }
 }

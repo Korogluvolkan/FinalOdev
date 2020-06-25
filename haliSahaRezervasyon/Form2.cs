@@ -29,15 +29,7 @@ namespace haliSahaRezervasyon
         public int SahaFiyat = 0;
         private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            Form3 f3 = new Form3();
-            f3.textBox1.Text = dataGridView2.SelectedCells[5].Value.ToString();
-            label5.Text = dataGridView2.SelectedCells[1].Value.ToString();
-            label7.Text = dataGridView2.SelectedCells[3].Value.ToString()+ " / "+ dataGridView2.SelectedCells[2].Value.ToString();
-            label8.Text = dataGridView2.SelectedCells[4].Value.ToString();
-            label6.Text = dataGridView2.SelectedCells[5].Value.ToString();
-            richTextBox1.Text = dataGridView2.SelectedCells[6].Value.ToString();
-
-            button5.Visible = true;
+          
         }
 
         private void Form2_Load(object sender, EventArgs e)
@@ -135,20 +127,25 @@ namespace haliSahaRezervasyon
 
         private void dataGridView2_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
         {
-           /* //  Form f3 = new Form3();
-            // f3.textBox1.Text = dataGridView2.SelectedCells[4].Value.ToString();
-            if (dataGridView2.Rows.Count >= 2) { 
-            label5.Text = dataGridView2.SelectedCells[0].Value.ToString();
-            label7.Text = dataGridView2.SelectedCells[1].Value.ToString() + " / " + dataGridView2.SelectedCells[2].Value.ToString();
-            label8.Text = dataGridView2.SelectedCells[3].Value.ToString();
-            label6.Text = dataGridView2.SelectedCells[4].Value.ToString();
-            richTextBox1.Text = dataGridView2.SelectedCells[5].Value.ToString();
-            }*/
+         
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            Form3 f3 = new Form3();
+            f3.textBox1.Text = dataGridView2.SelectedCells[5].Value.ToString();
+            label5.Text = dataGridView2.SelectedCells[1].Value.ToString();
+            label7.Text = dataGridView2.SelectedCells[3].Value.ToString() + " / " + dataGridView2.SelectedCells[2].Value.ToString();
+            label8.Text = dataGridView2.SelectedCells[4].Value.ToString();
+            label6.Text = dataGridView2.SelectedCells[5].Value.ToString();
+            richTextBox1.Text = dataGridView2.SelectedCells[6].Value.ToString();
+
+            button5.Visible = true;
         }
     }
 }
